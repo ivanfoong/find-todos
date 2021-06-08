@@ -1,7 +1,7 @@
 # WhatTODO (A CLI tool to find TODOs)
 
 To find TODOs in your files
-By ivanfoong<mailto:vonze21@gmail.com>
+By [ivanfoong](mailto:vonze21@gmail.com)
 
 ## Build source
 ```
