@@ -9,8 +9,8 @@ beforeEach(() => {
   mock({
     '/data/src/moduleA': {
       'index.js': `console.log("Hello from moduleA");
-// TODO WIP
-// TODO to be done`,
+// WIP TODO
+// ivanfoong: TODO`,
       'test.png': '',
     },
     '/data/src/moduleB': {
@@ -54,11 +54,11 @@ test('detect TODO in file', async () => {
       findings: [
         {
           lineNumber: 2,
-          lineContent: '// TODO WIP',
+          lineContent: '// WIP TODO',
         },
         {
           lineNumber: 3,
-          lineContent: '// TODO to be done',
+          lineContent: '// ivanfoong: TODO',
         },
       ],
     };
@@ -69,6 +69,67 @@ test('detect TODO in file', async () => {
 test('detect TODO in files of data folder', async () => {
   const config: Config = {
     strictTODO: false,
+    fileExtensionFilter: [],
+  };
+  const result = await findTODOInFolder('/data', config);
+  expect(result.isOk()).toBeTruthy();
+  if (result.isOk()) {
+    expect(result.value).toEqual({
+      files: [
+        {
+          filename: 'index.js',
+          findings: [
+            { lineContent: '// WIP TODO', lineNumber: 2 },
+            { lineContent: '// ivanfoong: TODO', lineNumber: 3 },
+          ],
+          path: '/data/src/moduleA',
+        },
+        {
+          filename: 'index.ts',
+          findings: [{ lineContent: '// TODO WIP', lineNumber: 2 }],
+          path: '/data/src/moduleB',
+        },
+      ],
+    });
+  }
+});
+
+test('detect TODO in ts files', async () => {
+  const config: Config = {
+    strictTODO: false,
+    fileExtensionFilter: ['ts'],
+  };
+  const result = await findTODOInFolder('/data', config);
+  expect(result.isOk()).toBeTruthy();
+  if (result.isOk()) {
+    expect(result.value).toEqual({
+      files: [
+        {
+          filename: 'index.ts',
+          findings: [{ lineContent: '// TODO WIP', lineNumber: 2 }],
+          path: '/data/src/moduleB',
+        },
+      ],
+    });
+  }
+});
+
+test('detect TODO in strict mode', async () => {
+  mock({
+    '/data/src/moduleA': {
+      'index.js': `console.log("Hello from moduleA");
+// TODO WIP
+// TODO to be done`,
+      'test.png': '',
+    },
+    '/data/src/moduleB': {
+      'index.ts': `console.log("Hello from moduleB");
+// TODO WIP
+`,
+    },
+  });
+  const config: Config = {
+    strictTODO: true,
     fileExtensionFilter: [],
   };
   const result = await findTODOInFolder('/data', config);
