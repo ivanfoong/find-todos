@@ -115,7 +115,7 @@ export const findTODOInFolder = async (
   for (const filepath of sourceFilePaths) {
     // eslint-disable-next-line no-await-in-loop
     const result = await findTODOInFile(filepath, config.strictTODO);
-    if (result.isOk()) {
+    if (result.isOk() && result.value.findings.length > 0) {
       files.push(result.value);
     } else {
       // TODO not to silently fail
